@@ -22,8 +22,19 @@
   <p class="accroche">Le jeu de plateau où l’on paie en frissons, ou en nature. À deux, sur un seul téléphone.</p>
   <form id="formNouvelle">
     <div class="duo">
-      <div class="qui"><label>Premier joueur<input name="j1" maxlength="14" autocomplete="off" placeholder="Prénom"></label><div class="genre" role="radiogroup" aria-label="Premier joueur"><label><input type="radio" name="g1" value="f" checked><span>Elle</span></label><label><input type="radio" name="g1" value="m"><span>Lui</span></label></div></div>
-      <div class="qui"><label>Second joueur<input name="j2" maxlength="14" autocomplete="off" placeholder="Prénom"></label><div class="genre" role="radiogroup" aria-label="Second joueur"><label><input type="radio" name="g2" value="f"><span>Elle</span></label><label><input type="radio" name="g2" value="m" checked><span>Lui</span></label></div></div>
+      <div class="qui" data-g="f">
+        <span class="badge-genre" aria-hidden="true">Elle</span>
+        <input name="j1" maxlength="14" autocomplete="off" placeholder="Son prénom" aria-label="Prénom de la joueuse">
+        <input type="hidden" name="g1" value="f">
+      </div>
+      <button type="button" class="inverser" id="inverser" aria-label="Inverser elle et lui">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h12m0 0-4-4m4 4-4 4M17 17H5m0 0 4-4m-4 4 4 4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="qui" data-g="m">
+        <span class="badge-genre" aria-hidden="true">Lui</span>
+        <input name="j2" maxlength="14" autocomplete="off" placeholder="Son prénom" aria-label="Prénom du joueur">
+        <input type="hidden" name="g2" value="m">
+      </div>
     </div>
     <fieldset class="niveaux">
       <legend>Intensité des gages</legend>

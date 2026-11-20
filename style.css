@@ -214,12 +214,14 @@ input::placeholder { color: #8a7d85; }
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
 
-/* Genre des joueurs */
-.qui { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
-.genre { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
-.genre label { cursor: pointer; }
-.genre input { position: absolute; opacity: 0; width: auto; }
-.genre span { display: block; text-align: center; padding: 9px 0; border-radius: 999px; background: var(--surface); color: var(--muted); font-weight: 600; transition: transform .15s var(--ease); }
-.genre input:checked + span { background: var(--vif); color: var(--ink-dark); }
-.genre input:focus-visible + span { outline: 2px solid var(--text); outline-offset: 2px; }
-.genre label:active span { transform: scale(.95); }
+/* Elle et Lui */
+.duo { grid-template-columns: 1fr 44px 1fr; align-items: stretch; gap: 8px; }
+.qui { --g: var(--rose); position: relative; display: flex; flex-direction: column; gap: 10px; min-width: 0; background: var(--surface); border-radius: 18px; padding: 14px 12px 12px; overflow: hidden; }
+.qui[data-g="m"] { --g: var(--j1); }
+.qui::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 4px; background: var(--g); }
+.badge-genre { font: 44px/.9 var(--display); letter-spacing: .04em; color: var(--g); text-shadow: 0 0 18px color-mix(in srgb, var(--g) 55%, transparent); }
+.qui input:not([type]) { background: var(--raised); padding: 11px 12px; font-size: 16px; }
+.inverser { align-self: center; width: 44px; height: 44px; border: 0; border-radius: 50%; background: var(--high); color: var(--text); display: grid; place-items: center; cursor: pointer; transition: transform .2s var(--ease); }
+.inverser svg { width: 22px; height: 22px; }
+.inverser:active { transform: scale(.9); }
+@media (hover: hover) { .inverser:hover { transform: rotate(180deg); transition-duration: .45s; } }

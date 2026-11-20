@@ -36,8 +36,12 @@ function pioche(nom, liste) {
   if (!S.paquets[nom]?.length) S.paquets[nom] = melange(liste.map((_, i) => i));
   return liste[S.paquets[nom].pop()];
 }
-const gagesDuNiveau = (n) => GAGES.filter((g) => g.n === n || g.n === n - 1);
-const piocheGage = () => pioche('gage' + S.niveau, gagesDuNiveau(S.niveau));
+const lettre = (j) => (fem(j) ? 'F' : 'H');
+// Coquin mélange ses gages avec les doux ; Brûlant ne garde que les siens. On ne pioche que ceux faits pour le genre du joueur.
+const gagesDuNiveau = (n, j) => GAGES.filter((g) => (g.n === n || (n === 1 && g.n === 0)) && (!g.pour || g.pour === lettre(j)));
+const piocheGage = () => pioche('gage' + S.niveau + lettre(moi()), gagesDuNiveau(S.niveau, moi()));
+// Texte du paiement en nature d'un lieu, selon le genre du visiteur.
+const gageLieu = (c, vis) => { const g = c.gages[S.niveau]; return typeof g === 'string' ? g : g[lettre(vis)]; };
 
 const possedes = (j, type) => CASES.filter((c, i) => c.type === type && S.proprios[i] === j).length;
 const groupeComplet = (j, g) => CASES.every((c, i) => c.g !== g || S.proprios[i] === j);
@@ -283,7 +287,7 @@ function acte(i, avecGage = true) {
     : c.type === 'amb' ? [['Avec 1 ambiance', '4 × les dés'], ['Avec les 2', '10 × les dés']]
     : [['Loyer', loyerBase(c)], ['Avec tout le groupe', loyerBase(c) * 2]];
   const own = S.joueurs[p ?? S.tour], vis = S.joueurs[1 - (p ?? S.tour)];
-  const nature = avecGage ? `<p class="nature"><em>Ou en nature, quand ${vis.nom} passe chez ${own.nom}</em>${avec(c.gages[S.niveau], vis, own)}</p>` : '';
+  const nature = avecGage ? `<p class="nature"><em>Ou en nature, quand ${vis.nom} passe chez ${own.nom}</em>${avec(gageLieu(c, vis), vis, own)}</p>` : '';
   return `<div class="acte"><div class="acte-tete" style="background:${gr.couleur}"><strong>${c.nom}</strong><span>${gr.nom}, prix ${c.prix}</span></div>
     <div class="acte-corps">${lignes.map(([a, b]) => `<p class="ligne"><span>${a}</span><b>${b}</b></p>`).join('')}
     ${p !== undefined ? `<p class="proprietaire">Appartient à ${S.joueurs[p].nom}</p>` : ''}${nature}</div></div>`;
@@ -469,7 +473,7 @@ async function resoudrePropriete(i) {
   const loyer = loyerDe(i);
   const v = await ouvrir({
     titre: `Chez ${toi().nom}`, sous: `${c.nom}. Loyer : ${loyer} frissons. Ou bien :`,
-    nature: fmt(c.gages[S.niveau]),
+    nature: fmt(gageLieu(c, moi())),
     boutons: [{ label: 'Payé en nature', v: 'nature' }, { label: `Payer ${loyer}`, v: 'payer' }],
   });
   if (v === 'payer') payer(S.tour, loyer, p);
@@ -501,7 +505,7 @@ function verifierFin() {
   return true;
 }
 function terminer(g, raison) {
-  S.fini = { g, raison, gage: pioche('gagefin', gagesDuNiveau(Math.min(2, S.niveau + 1))).txt };
+  S.fini = { g, raison, gage: pioche('gagefin' + lettre(S.joueurs[1 - g]), gagesDuNiveau(Math.min(2, S.niveau + 1), S.joueurs[1 - g])).txt };
   sauver(); afficherFin();
 }
 function afficherFin() {
@@ -546,6 +550,19 @@ $('#formNouvelle').onsubmit = (e) => {
     tour: hasard(2), proprios: {}, niveau: +f.get('niveau'), stop: propre(f.get('stop')) || 'Ananas', paquets: {}, fini: null, des: 7,
   };
   sauver(); demarrer();
+};
+// Elle et Lui : un seul bouton inverse les deux cartes, la partie se joue toujours à un homme et une femme.
+$('#inverser').onclick = () => {
+  const quis = [...document.querySelectorAll('.qui')];
+  quis.forEach((q) => {
+    const fem = q.dataset.g === 'm';
+    q.dataset.g = fem ? 'f' : 'm';
+    q.querySelector('.badge-genre').textContent = fem ? 'Elle' : 'Lui';
+    q.querySelector('input[type=hidden]').value = q.dataset.g;
+    q.querySelector('input:not([type])').setAttribute('aria-label', fem ? 'Prénom de la joueuse' : 'Prénom du joueur');
+    if (!reduit) q.querySelector('.badge-genre').animate([{ transform: 'translateY(-14px) rotateX(80deg)', opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: 420, easing: 'cubic-bezier(.2,.8,.2,1)' });
+  });
+  if (!reduit) $('#inverser').animate([{ transform: 'rotate(0)' }, { transform: 'rotate(180deg)' }], { duration: 450, easing: 'cubic-bezier(.2,.8,.2,1)' });
 };
 $('#btnLancer').onclick = lancer;
 $('#btnRejouer').onclick = () => { localStorage.removeItem(CLE); location.reload(); };
