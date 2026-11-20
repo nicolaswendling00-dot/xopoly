@@ -1,0 +1,17 @@
+{
+  "name": "Xopoly",
+  "short_name": "Xopoly",
+  "description": "Le jeu de plateau coquin pour deux, sur un seul téléphone.",
+  "lang": "fr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0e0809",
+  "theme_color": "#0e0809",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

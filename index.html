@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0e0809">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Xopoly">
+<title>Xopoly</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<main id="accueil" class="ecran">
+  <h1 class="logo">Xopoly</h1>
+  <p class="accroche">Le jeu de plateau où l’on paie en frissons, ou en nature. À deux, sur un seul téléphone.</p>
+  <form id="formNouvelle">
+    <div class="duo">
+      <label>Premier joueur<input name="j1" maxlength="14" autocomplete="off" placeholder="Prénom"></label>
+      <label>Second joueur<input name="j2" maxlength="14" autocomplete="off" placeholder="Prénom"></label>
+    </div>
+    <fieldset class="niveaux">
+      <legend>Intensité des gages</legend>
+      <label><input type="radio" name="niveau" value="0"><span><b>Doux</b>Baisers, massages, confidences.</span></label>
+      <label><input type="radio" name="niveau" value="1" checked><span><b>Coquin</b>Vêtements qui tombent, yeux bandés.</span></label>
+      <label><input type="radio" name="niveau" value="2"><span><b>Brûlant</b>Liens, fessées, obéissance.</span></label>
+    </fieldset>
+    <label>Mot d’arrêt<input name="stop" maxlength="20" autocomplete="off" placeholder="Ananas" aria-describedby="stopAide"></label>
+    <p id="stopAide" class="aide">Dit par l’un de vous, il arrête le gage en cours, sans discussion.</p>
+    <button class="btn principal" type="submit">Commencer la partie</button>
+    <button class="btn second" type="button" id="reprendre" hidden>Reprendre la partie en cours</button>
+  </form>
+  <p class="aide">Réservé aux adultes consentants.</p>
+</main>
+
+<main id="jeu" class="ecran" hidden>
+  <header class="barre-haut">
+    <span class="marque">Xopoly</span>
+    <button class="btn lien" id="btnMenu">Menu</button>
+  </header>
+  <div id="plateau" class="plateau">
+    <div class="centre">
+      <p id="aQui" class="a-qui" aria-live="polite"></p>
+      <div class="des" aria-hidden="true"><div class="de"><div class="cube"></div></div><div class="de"><div class="cube"></div></div></div>
+      <button class="btn principal" id="btnLancer">Lancer les dés</button>
+      <p id="journal" class="journal" aria-live="polite"></p>
+    </div>
+  </div>
+  <section class="joueurs" aria-label="Joueurs">
+    <div class="joueur" data-j="0"><span class="nom"></span><span class="argent"><b>0</b> frissons</span><span class="lieux"></span></div>
+    <div class="joueur" data-j="1"><span class="nom"></span><span class="argent"><b>0</b> frissons</span><span class="lieux"></span></div>
+  </section>
+</main>
+
+<main id="fin" class="ecran" hidden>
+  <h1 id="finTitre" class="logo"></h1>
+  <p id="finTexte" class="accroche"></p>
+  <div id="finCarte" class="carte-fin"></div>
+  <button class="btn principal" id="btnRejouer">Nouvelle partie</button>
+</main>
+
+<div id="calque" hidden></div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
