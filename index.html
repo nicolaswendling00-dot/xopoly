@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0e0809">
+<meta name="theme-color" content="#08070a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Xopoly">
@@ -12,13 +12,13 @@
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <main id="accueil" class="ecran">
-  <h1 class="logo">Xopoly</h1>
+  <h1 class="neon">Xopoly</h1>
   <p class="accroche">Le jeu de plateau où l’on paie en frissons, ou en nature. À deux, sur un seul téléphone.</p>
   <form id="formNouvelle">
     <div class="duo">
@@ -40,26 +40,33 @@
 </main>
 
 <main id="jeu" class="ecran" hidden>
-  <header class="barre-haut">
-    <span class="marque">Xopoly</span>
-    <button class="btn lien" id="btnMenu">Menu</button>
+  <header class="hud-haut">
+    <div class="joueur" data-j="0"><span class="nom"></span><span class="argent"><b>0</b></span><span class="lieux"></span></div>
+    <button class="btn menu" id="btnMenu" aria-label="Menu"><i></i><i></i><i></i></button>
+    <div class="joueur" data-j="1"><span class="nom"></span><span class="argent"><b>0</b></span><span class="lieux"></span></div>
   </header>
-  <div id="plateau" class="plateau">
-    <div class="centre">
-      <p id="aQui" class="a-qui" aria-live="polite"></p>
-      <div class="des" aria-hidden="true"><div class="de"><div class="cube"></div></div><div class="de"><div class="cube"></div></div></div>
-      <button class="btn principal" id="btnLancer">Lancer les dés</button>
-      <p id="journal" class="journal" aria-live="polite"></p>
+  <div class="scene" id="scene">
+    <div class="plateau" id="plateau">
+      <div class="tranche bas"></div><div class="tranche haut"></div><div class="tranche gauche"></div><div class="tranche droite"></div>
+      <div class="ombre"></div><div class="fond"></div>
+      <div class="centre">
+        <div class="cadre-neon"></div>
+        <p class="logo-plateau">Xopoly</p>
+        <p class="devise">En frissons ou en nature</p>
+        <div class="pile gage" id="pileGage"></div>
+        <div class="pile tentation" id="pileTentation"></div>
+        <div class="piste-des"><div class="de"><div class="cube"></div></div><div class="de"><div class="cube"></div></div></div>
+      </div>
     </div>
   </div>
-  <section class="joueurs" aria-label="Joueurs">
-    <div class="joueur" data-j="0"><span class="nom"></span><span class="argent"><b>0</b> frissons</span><span class="lieux"></span></div>
-    <div class="joueur" data-j="1"><span class="nom"></span><span class="argent"><b>0</b> frissons</span><span class="lieux"></span></div>
-  </section>
+  <footer class="hud-bas">
+    <p id="journal" class="journal" aria-live="polite"></p>
+    <button class="btn principal" id="btnLancer">Lancer les dés</button>
+  </footer>
 </main>
 
 <main id="fin" class="ecran" hidden>
-  <h1 id="finTitre" class="logo"></h1>
+  <h1 id="finTitre" class="neon"></h1>
   <p id="finTexte" class="accroche"></p>
   <div id="finCarte" class="carte-fin"></div>
   <button class="btn principal" id="btnRejouer">Nouvelle partie</button>

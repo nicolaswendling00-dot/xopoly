@@ -1,4 +1,4 @@
-const VERSION = 'xopoly-1';
+const VERSION = 'xopoly-2';
 const FICHIERS = ['./', 'index.html', 'style.css', 'app.js', 'data.js', 'manifest.webmanifest', 'icon.svg', 'icon-192.png', 'icon-512.png'];
 self.addEventListener('install', (e) => { e.waitUntil(caches.open(VERSION).then((c) => c.addAll(FICHIERS))); self.skipWaiting(); });
 self.addEventListener('activate', (e) => {
