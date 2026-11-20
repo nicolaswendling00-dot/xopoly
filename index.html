@@ -22,14 +22,14 @@
   <p class="accroche">Le jeu de plateau où l’on paie en frissons, ou en nature. À deux, sur un seul téléphone.</p>
   <form id="formNouvelle">
     <div class="duo">
-      <label>Premier joueur<input name="j1" maxlength="14" autocomplete="off" placeholder="Prénom"></label>
-      <label>Second joueur<input name="j2" maxlength="14" autocomplete="off" placeholder="Prénom"></label>
+      <div class="qui"><label>Premier joueur<input name="j1" maxlength="14" autocomplete="off" placeholder="Prénom"></label><div class="genre" role="radiogroup" aria-label="Premier joueur"><label><input type="radio" name="g1" value="f" checked><span>Elle</span></label><label><input type="radio" name="g1" value="m"><span>Lui</span></label></div></div>
+      <div class="qui"><label>Second joueur<input name="j2" maxlength="14" autocomplete="off" placeholder="Prénom"></label><div class="genre" role="radiogroup" aria-label="Second joueur"><label><input type="radio" name="g2" value="f"><span>Elle</span></label><label><input type="radio" name="g2" value="m" checked><span>Lui</span></label></div></div>
     </div>
     <fieldset class="niveaux">
       <legend>Intensité des gages</legend>
       <label><input type="radio" name="niveau" value="0"><span><b>Doux</b>Baisers, massages, confidences.</span></label>
-      <label><input type="radio" name="niveau" value="1" checked><span><b>Coquin</b>Vêtements qui tombent, yeux bandés.</span></label>
-      <label><input type="radio" name="niveau" value="2"><span><b>Brûlant</b>Liens, fessées, obéissance.</span></label>
+      <label><input type="radio" name="niveau" value="1" checked><span><b>Coquin</b>Vêtements qui tombent, caresses osées.</span></label>
+      <label><input type="radio" name="niveau" value="2"><span><b>Brûlant</b>Sexe, caresses intimes, oral.</span></label>
     </fieldset>
     <label>Mot d’arrêt<input name="stop" maxlength="20" autocomplete="off" placeholder="Ananas" aria-describedby="stopAide"></label>
     <p id="stopAide" class="aide">Dit par l’un de vous, il arrête le gage en cours, sans discussion.</p>

@@ -13,8 +13,17 @@ let occupe = false;
 const sauver = () => localStorage.setItem(CLE, JSON.stringify(S));
 const moi = () => S.joueurs[S.tour];
 const toi = () => S.joueurs[1 - S.tour];
-const avec = (txt, a, b) => txt.replaceAll('{moi}', a).replaceAll('{toi}', b);
-const fmt = (txt) => avec(txt, moi().nom, toi().nom);
+const fem = (j) => j.genre === 'f';
+const MOTS = { il: ['il', 'elle'], le: ['le', 'la'], lui: ['lui', 'elle'], e: ['', 'e'] };
+// Remplace {moi}, {toi} et les accords décrits en tête de data.js.
+function avec(txt, a, b) {
+  const f = { 1: fem(a), 2: fem(b), 3: fem(a) && fem(b) };
+  return txt
+    .replace(/\{([123]):([^|}]*)\|([^}]*)\}/g, (_, n, m, w) => (f[n] ? w : m))
+    .replace(/\{(il|le|lui|e)([12])\}/g,(_, mot, n) => MOTS[mot][+f[n]])
+    .replaceAll('{moi}', a.nom).replaceAll('{toi}', b.nom);
+}
+const fmt = (txt) => avec(txt, moi(), toi());
 const majuscule = (t) => t[0].toUpperCase() + t.slice(1);
 const DUREES =[[/trois minutes/, 180], [/deux minutes/, 120], [/une minute/, 60], [/trente secondes/, 30], [/dix secondes/, 10]];
 const dureeDe = (t) => DUREES.find(([r]) => r.test(t))?.[1];
@@ -180,7 +189,7 @@ async function auxMenottes() {
   camera('zoom', 10);
   await sauter(S.tour, 10, 900, true);
   majJoueurs();
-  dire(`${j.nom} est aux Menottes.`);
+  dire(`${j.nom} est en Abstinence.`);
 }
 
 function marquer(i, k, anime = true) {
@@ -238,7 +247,7 @@ function majJoueurs(k = null, delta = 0) {
   document.querySelectorAll('.joueur').forEach((el, i) => {
     const j = S.joueurs[i];
     el.classList.toggle('actif', i === S.tour);
-    el.querySelector('.nom').textContent = j.nom + (j.menottes ? ', menotté' : '');
+    el.querySelector('.nom').textContent = j.nom + (j.menottes ? ', en abstinence' : '');
     const b = el.querySelector('.argent b');
     const cible = j.argent, depart = +b.dataset.v || 0;
     b.dataset.v = cible;
@@ -273,7 +282,8 @@ function acte(i, avecGage = true) {
   const lignes = c.type === 'acc' ? [['Avec 1 accessoire', 25], ['Avec 2', 50], ['Avec 3', 100], ['Avec les 4', 200]]
     : c.type === 'amb' ? [['Avec 1 ambiance', '4 × les dés'], ['Avec les 2', '10 × les dés']]
     : [['Loyer', loyerBase(c)], ['Avec tout le groupe', loyerBase(c) * 2]];
-  const nature = avecGage ? `<p class="nature"><em>Ou en nature</em>${majuscule(avec(c.gages[S.niveau], 'le visiteur', 'le propriétaire'))}</p>` : '';
+  const own = S.joueurs[p ?? S.tour], vis = S.joueurs[1 - (p ?? S.tour)];
+  const nature = avecGage ? `<p class="nature"><em>Ou en nature, quand ${vis.nom} passe chez ${own.nom}</em>${avec(c.gages[S.niveau], vis, own)}</p>` : '';
   return `<div class="acte"><div class="acte-tete" style="background:${gr.couleur}"><strong>${c.nom}</strong><span>${gr.nom}, prix ${c.prix}</span></div>
     <div class="acte-corps">${lignes.map(([a, b]) => `<p class="ligne"><span>${a}</span><b>${b}</b></p>`).join('')}
     ${p !== undefined ? `<p class="proprietaire">Appartient à ${S.joueurs[p].nom}</p>` : ''}${nature}</div></div>`;
@@ -341,9 +351,9 @@ function detailCase(i) {
     gage: `On pioche un gage. Le faire rapporte ${BONUS_GAGE}, s’y dérober coûte ${AMENDE_FUITE} à verser à l’autre.`,
     tentation: 'Une carte qui déplace, enrichit ou ruine. Parfois avec un petit supplément.',
     taxe: `Payer ${c.montant} frissons à la banque, ou payer en nature.`,
-    menottes: `En visite, rien ne se passe. Menotté, on sort en payant ${CAUTION} ou en faisant un gage.`,
+    menottes: `En simple visite, rien ne se passe. En abstinence, on sort en payant ${CAUTION} ou en faisant un gage.`,
     pause: 'Un câlin, et rien d’autre.',
-    allez: 'Direction les Menottes, sans passer par le Départ.',
+    allez: 'Direction l’Abstinence, sans passer par le Départ.',
   }[c.type];
   ouvrir({ titre: c.nom, sous, boutons: [{ label: 'Fermer' }] });
 }
@@ -375,7 +385,7 @@ async function lancer() {
     S.des = a + b;
     const double = a === b;
     if (double) doubles++;
-    if (doubles === 3) { dire(`Trois doubles de suite, ${j.nom} est trop pressé.`); await attendre(500); await auxMenottes(); break; }
+    if (doubles === 3) { dire(`Trois doubles de suite, ${j.nom} est trop ${fem(j) ? 'pressée' : 'pressé'}.`); await attendre(500); await auxMenottes(); break; }
     dire(`${j.nom} fait ${a} et ${b}.` + (double ? ' Double, rejoue après.' : ''));
     await attendre(250);
     camera('zoom', j.pos);
@@ -396,9 +406,9 @@ async function sortirMenottes() {
   const j = moi();
   camera('zoom', 10);
   const v = await ouvrir({
-    titre: `${j.nom} est menotté`, sous: 'Pour sortir et jouer ce tour :',
+    titre: `${j.nom} est en abstinence`, sous: 'Pour sortir et jouer ce tour :',
     boutons: [
-      ...(j.libere ? [{ label: 'Utiliser la carte Coffre fort', v: 'carte' }] : []),
+      ...(j.libere ? [{ label: 'Utiliser la carte Joker', v: 'carte' }] : []),
       { label: `Payer la caution, ${CAUTION} frissons`, v: 'payer' },
       { label: 'Faire un gage', v: 'gage' },
     ],
@@ -437,9 +447,9 @@ async function resoudre() {
     }
     case 'pause': return ouvrir({ titre: c.nom, texte: fmt(c.txt), minuteur: 30, boutons: [{ label: 'Avec plaisir' }] });
     case 'allez':
-      await ouvrir({ titre: 'Outrage à la pudeur', sous: `${j.nom} part aux Menottes, sans passer par le Départ.`, boutons: [{ label: 'Tendre les poignets' }] });
+      await ouvrir({ titre: 'Pensées trop coquines', sous: `${j.nom} part en Abstinence, sans passer par le Départ.`, boutons: [{ label: 'Se calmer un peu' }] });
       return auxMenottes();
-    case 'menottes': return dire(`${j.nom} rend visite aux Menottes.`);
+    case 'menottes': return dire(`${j.nom} passe à l’Abstinence, en simple visite.`);
     default: return dire(`${j.nom} est sur le Départ.`);
   }
 }
@@ -455,7 +465,7 @@ async function resoudrePropriete(i) {
     if (v === 'achat') { S.proprios[i] = S.tour; payer(S.tour, c.prix); marquer(i, S.tour); majJoueurs(); dire(`${j.nom} achète ${c.nom}.`); }
     return;
   }
-  if (p === S.tour) return dire(`${j.nom} est chez lui ou chez elle, ${c.nom}.`);
+  if (p === S.tour) return dire(`${j.nom} est chez ${fem(j) ? 'elle' : 'lui'}, ${c.nom}.`);
   const loyer = loyerDe(i);
   const v = await ouvrir({
     titre: `Chez ${toi().nom}`, sous: `${c.nom}. Loyer : ${loyer} frissons. Ou bien :`,
@@ -498,8 +508,8 @@ function afficherFin() {
   const g = S.joueurs[S.fini.g], p = S.joueurs[1 - S.fini.g];
   document.documentElement.style.setProperty('--vif', `var(--j${S.fini.g})`);
   $('#finTitre').textContent = `${g.nom} gagne`;
-  $('#finTexte').textContent = `${S.fini.raison} ${p.nom} est à sa merci pour le reste de la soirée. Premier ordre :`;
-  $('#finCarte').textContent = avec(S.fini.gage, p.nom, g.nom);
+  $('#finTexte').textContent = `${S.fini.raison} ${p.nom} est à sa merci pour le reste de la soirée. Première faveur due :`;
+  $('#finCarte').textContent = avec(S.fini.gage, p, g);
   montrer('fin');
 }
 
@@ -532,7 +542,7 @@ $('#formNouvelle').onsubmit = (e) => {
   const propre = (v) => v.replace(/[<>&"]/g, '').trim();
   const noms = [propre(f.get('j1')) || 'Joueur 1', propre(f.get('j2')) || 'Joueur 2'];
   S = {
-    joueurs: noms.map((nom) => ({ nom, argent: ARGENT_DEPART, pos: 0, menottes: false, libere: 0 })),
+    joueurs: noms.map((nom, k) => ({ nom, genre: f.get('g' + (k + 1)), argent: ARGENT_DEPART, pos: 0, menottes: false, libere: 0 })),
     tour: hasard(2), proprios: {}, niveau: +f.get('niveau'), stop: propre(f.get('stop')) || 'Ananas', paquets: {}, fini: null, des: 7,
   };
   sauver(); demarrer();
